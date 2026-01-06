@@ -1,0 +1,12 @@
+Objectif : ==> Ouvrir un fichier TCP dump, l'analyser et recuperer les information v 
+
+Trie l'utilite des info et identifier les principal atck  v 
+
+Notice explicative du code 
+
+
+1er etape recupe les ip de chaque ligne. v
+
+
+2eme analyse si c'est un dns ou non v 
+
