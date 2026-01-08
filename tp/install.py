@@ -6,9 +6,9 @@ def installer_package(package):
     print(f"--- Installation de {package} en cours...")
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-        print(f"✅ {package} a été installé avec succès.")
+        print(f"{package} a été installé avec succès.")
     except subprocess.CalledProcessError:
-        print(f"❌ Erreur lors de l'installation de {package}.")
+        print(f"Erreur lors de l'installation de {package}.")
 
 def verifier_et_configurer():
     print("=== Configuration automatique de l'environnement ===\n")
@@ -16,14 +16,14 @@ def verifier_et_configurer():
     # 1. Vérification de Flask (nécessaire pour web.py)
     try:
         import flask
-        print("✅ Flask est déjà installé.")
+        print("Flask est déjà installé.")
     except ImportError:
         installer_package("flask")
 
     try:
         import flask
     except ImportError:
-        print("⚠️ Flask n'est pas détecté.")
+        print("Flask n'est pas détecté.")
         print("Sur Linux, utilisez : sudo apt-get install python3-flask")
         return 0
     
@@ -31,9 +31,9 @@ def verifier_et_configurer():
     # 2. Vérification de Tkinter (souvent inclus, mais parfois séparé sur Linux)
     try:
         import tkinter
-        print("✅ Tkinter est disponible.")
+        print("Tkinter est disponible.")
     except ImportError:
-        print("⚠️ Tkinter n'est pas détecté.")
+        print("Tkinter n'est pas détecté.")
         print("Sur Linux, utilisez : sudo apt-get install python3-tk")
         return 0
 

@@ -38,8 +38,9 @@ def detecter_attaques(data_rows):
 
     # --- SEUILS ---
     LIMIT_SYN_HIGH = 50
-    LIMIT_SYN_MID = 25 
+    LIMIT_SYN_MID = LIMIT_SYN_HIGH / 2
     LIMIT_SCAN_PORTS = 10 
+    LIMIT_SCAN_MAX = LIMIT_SCAN_PORTS + 30
 
     for row in data_rows:
         ip_src = row["Source_IP"]
@@ -77,12 +78,13 @@ def detecter_attaques(data_rows):
     for ip, ports in scans_ports.items():
         if len(ports) > LIMIT_SCAN_PORTS:
             total_pkts = packet_count_scan[ip]
+            niveau = "HIGH" if count >= LIMIT_SCAN_MAX else "MID"
             alertes_web.append({
                 "ip": ip, 
                 "type": "Scan de Ports", 
                 "nb_packets": total_pkts, # Nombre total de paquets durant le scan
                 "details": f"Scan sur {len(ports)} ports ({total_pkts} paquets)", 
-                "niveau": "MID"
+                "niveau": niveau
             })
 
     return alertes_web
