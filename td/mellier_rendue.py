@@ -1,85 +1,270 @@
-import csv
-import os
+import tkinter as tk
+from tkinter import filedialog
 
-def extract_variable(line, keyword):
-    """Cherche un mot-clé (seq, ack, win, length) et extrait la valeur suivante."""
-    if keyword not in line:
-        return ""
-    try:
-        # On découpe la ligne juste après le mot-clé
-        after_keyword = line.split(keyword)[1].strip()
-        # On récupère le premier bloc de texte et on nettoie (virgule, deux-points, etc.)
-        value = after_keyword.split()[0].strip(',').strip(':').strip(']')
-        return value
-    except (IndexError, ValueError):
-        return ""
+file = None
+choix = None
 
-def parse_network_traffic(input_file, output_csv):
-    # En-têtes conformes à votre demande
-    headers = [
-        "Horodatage", "Protocole", "Source_Port", "Destination_Port", 
-        "Flags", "Sequence", "Acknowledgment", "Window", "Length"
-    ]
+def sauvegarder_choix(selection):
+    global choix
+    choix = selection
+
+def choisir_fichier():
+    # Ouvre une boîte de dialogue pour sélectionner un fichier
+    chemin_fichier = filedialog.askopenfilename(title="Sélectionner un fichier")
     
-    parsed_data = []
+    # Affiche le chemin du fichier sélectionné
+    if chemin_fichier:
+        label_chemin.config(text=f"Fichier sélectionné : {chemin_fichier}")
+        global file
+        file = chemin_fichier
+    else:
+        label_chemin.config(text="Aucun fichier sélectionné")
 
-    if not os.path.exists(input_file):
-        print(f"Erreur : Le fichier '{input_file}' est introuvable.")
-        return
 
-    with open(input_file, 'r', encoding='utf-8') as f:
-        for line in f:
-            # RÈGLE ANTI-HEX : On ignore les lignes vides ou celles qui ne commencent pas par un chiffre
-            if not line.strip() or not line[0].isdigit():
-                continue
-            
-            parts = line.split()
-            # On vérifie que la ligne contient au moins les éléments de base IP
-            if len(parts) < 5 or parts[1] != "IP":
-                continue
-
-            # 1. Extraction des champs de base
-            timestamp = parts[0]
-            protocol = parts[1]
-            source_and_port = parts[2]
-            dest_and_port = parts[4].rstrip(':')
-            
-            # 2. Extraction des Flags TCP entre crochets [ ]
-            flags = ""
-            if "[" in line and "]" in line:
-                flags = line[line.find("[")+1 : line.find("]")]
-            
-            # 3. Extraction des variables numériques
-            seq = extract_variable(line, "seq")
-            ack = extract_variable(line, "ack")
-            win = extract_variable(line, "win")
-            length = extract_variable(line, "length")
-
-            # On ajoute uniquement si on a bien identifié un paquet
-            parsed_data.append({
-                "Horodatage": timestamp,
-                "Protocole": protocol,
-                "Source_Port": source_and_port,
-                "Destination_Port": dest_and_port,
-                "Flags": flags,
-                "Sequence": seq,
-                "Acknowledgment": ack,
-                "Window": win,
-                "Length": length
-            })
-
-    # Écriture dans le fichier CSV
-    with open(output_csv, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=headers)
-        writer.writeheader()
-        writer.writerows(parsed_data)
+def csvfileLinux(file_path):
+    f = open(file_path, 'r', encoding='utf-8')
     
-    print(f"Succès : {len(parsed_data)} paquets analysés (Hexadécimal ignoré).")
-    print(f"Fichier généré : {output_csv}")
+    lignes = f.readlines()
+    
+    # a: liste des éléments avant le ":"
+    a = []
+    # b: liste des éléments après le ":"
+    b = []
+    
+    for ligne in lignes:
+        ligne = ligne.strip()
+        if ':' in ligne:
+            elements = ligne.split(':', 1)
+            a.append(elements[0])
+            b.append(elements[1] if len(elements) > 1 else "")
+    
+    # Trouver toutes les positions de BEGIN:VEVENT
+    positions_begin = []
+    for index, element in enumerate(a):
+        if element == 'BEGIN' and b[index] == 'VEVENT':
+            positions_begin.append(index)
+    
+    # Extraire les événements
+    evenements = []
+    for i in range(len(positions_begin)):
+        if i < len(positions_begin) - 1:
+            debut = positions_begin[i]
+            fin = positions_begin[i + 1]
+        else:
+            debut = positions_begin[i]
+            # Trouver le END:VEVENT correspondant
+            fin = debut
+            for j in range(debut, len(a)):
+                if a[j] == 'END' and b[j] == 'VEVENT':
+                    fin = j + 1
+                    break
+        
+        # Créer un dictionnaire pour cet événement
+        evenement = {}
+        for k in range(debut, fin):
+            cle = a[k]
+            valeur = b[k]
+            # Ignorer BEGIN et END
+            if cle not in ['BEGIN', 'END']:
+                evenement[cle] = valeur
+        evenements.append(evenement)
+    
+    # Collecter toutes les colonnes uniques
+    colonnes = []
+    for evenement in evenements:
+        for cle in evenement.keys():
+            if cle not in colonnes:
+                colonnes.append(cle)
+    
+    f.close()
 
-# --- Paramètres de fichier ---
-input_path = "testpython/fichier182.txt"
-output_path = "resultat_analyse_reseau.csv"
+    # Écrire le fichier CSV
+    f2 = open('SortieCSV_Linux.csv', 'w', encoding='utf-8')
+    
+    # Écrire l'en-tête
+    ligneEntete = ";".join(colonnes) + "\n"
+    f2.write(ligneEntete)
+    
+    # Écrire les données
+    for evenement in evenements:
+        ligne_data = []
+        for colonne in colonnes:
+            valeur = evenement.get(colonne, "")  # Valeur vide si la colonne n'existe pas
+            ligne_data.append(valeur)
+        ligne = ",".join(ligne_data) + "\n"
+        f2.write(ligne)
+    # Écrire le fichier CSV
+    f2 = open('SortieCSV_Linux.csv', 'w', encoding='utf-8')
+    
+    # Écrire l'en-tête
+    ligneEntete = ",".join(colonnes) + "\n"
+    f2.write(ligneEntete)
+    
+    # Écrire les données
+    for evenement in evenements:
+        ligne_data = []
+        for colonne in colonnes:
+            valeur = evenement.get(colonne, "")  # Valeur vide si la colonne n'existe pas
+            ligne_data.append(valeur)
+        ligne = ",".join(ligne_data) + "\n"
+        f2.write(ligne)
+    
+    f2.close()
+    
+    print(f"Fichier CSV créé avec {len(evenements)} événements et {len(colonnes)} colonnes")
+def csvfileWin(file_path):
+    f = open(file_path, 'r', encoding='utf-8')
+    
+    lignes = f.readlines()
+    
+    # a: liste des éléments avant le ":"
+    a = []
+    # b: liste des éléments après le ":"
+    b = []
+    
+    for ligne in lignes:
+        ligne = ligne.strip()
+        if ':' in ligne:
+            elements = ligne.split(':', 1)
+            a.append(elements[0])
+            b.append(elements[1] if len(elements) > 1 else "")
+    
+    # Trouver toutes les positions de BEGIN:VEVENT
+    positions_begin = []
+    for index, element in enumerate(a):
+        if element == 'BEGIN' and b[index] == 'VEVENT':
+            positions_begin.append(index)
+    
+    # Extraire les événements
+    evenements = []
+    for i in range(len(positions_begin)):
+        if i < len(positions_begin) - 1:
+            debut = positions_begin[i]
+            fin = positions_begin[i + 1]
+        else:
+            debut = positions_begin[i]
+            # Trouver le END:VEVENT correspondant
+            fin = debut
+            for j in range(debut, len(a)):
+                if a[j] == 'END' and b[j] == 'VEVENT':
+                    fin = j + 1
+                    break
+        
+        # Créer un dictionnaire pour cet événement
+        evenement = {}
+        for k in range(debut, fin):
+            cle = a[k]
+            valeur = b[k]
+            # Ignorer BEGIN et END
+            if cle not in ['BEGIN', 'END']:
+                evenement[cle] = valeur
+        evenements.append(evenement)
+    
+    # Collecter toutes les colonnes uniques
+    colonnes = []
+    for evenement in evenements:
+        for cle in evenement.keys():
+            if cle not in colonnes:
+                colonnes.append(cle)
+    
+    f.close()
 
-# Lancement
-parse_network_traffic(input_path, output_path)
+    # Écrire le fichier CSV
+    f2 = open('SortieCSV_Win.csv', 'w', encoding='utf-8')
+    
+    # Écrire l'en-tête
+    ligneEntete = ",".join(colonnes) + "\n"
+    f2.write(ligneEntete)
+    
+    # Écrire les données
+    for evenement in evenements:
+        ligne_data = []
+        for colonne in colonnes:
+            valeur = evenement.get(colonne, "")  # Valeur vide si la colonne n'existe pas
+            ligne_data.append(valeur)
+        ligne = ";".join(ligne_data) + "\n"
+        f2.write(ligne)
+    # Écrire le fichier CSV
+    f2 = open('SortieCSV_Win.csv', 'w', encoding='utf-8')
+    
+    # Écrire l'en-tête
+    ligneEntete = ";".join(colonnes) + "\n"
+    f2.write(ligneEntete)
+    
+    # Écrire les données
+    for evenement in evenements:
+        ligne_data = []
+        for colonne in colonnes:
+            valeur = evenement.get(colonne, "")  # Valeur vide si la colonne n'existe pas
+            ligne_data.append(valeur)
+        ligne = ";".join(ligne_data) + "\n"
+        f2.write(ligne)
+    
+    f2.close()
+    
+    print(f"Fichier CSV créé avec {len(evenements)} événements et {len(colonnes)} colonnes")
+
+
+
+def open_file(file_path, demande=None):
+    f = open(file_path, 'r')
+    var_result = []
+    var_avantresult = []
+    for line in f:
+        if ':' in line:
+            avantresult = line.split(':', 1)[0].strip()
+            result = line.split(':', 1)[1].strip()
+            var_avantresult.append(avantresult)
+            var_result.append(result)
+
+    if demande is None or demande == "TOUT":
+        for res in var_result:
+            print(res)
+    else:
+        i = 0
+        for i, res_avant in enumerate(var_avantresult):
+            if res_avant == demande:
+                print(var_result[i])
+            i+=1
+    f.close()
+
+def quitter():
+    # Ferme la fenêtre principale proprement
+    fenetre.destroy()
+
+# Création de la fenêtre principale
+fenetre = tk.Tk()
+fenetre.title("Sélectionner un fichier")
+fenetre.geometry("850x450")
+
+# Ajout d'un bouton pour ouvrir le dialogue de sélection de fichier
+btn_choisir_fichier = tk.Button(fenetre, text="Choisir un fichier", command=choisir_fichier)
+btn_choisir_fichier.pack(pady=20)
+
+# Label pour afficher le chemin du fichier
+label_chemin = tk.Label(fenetre, text="Aucun fichier sélectionné")
+label_chemin.pack(pady=20)
+
+var = tk.StringVar(fenetre)
+var.set("Choissir une option") # valeur par défaut
+options = ["DTSTAMP", "DTSTART", "DTEND", "SUMMARY", "LOCATION", "DESCRIPTION", "UID", "CREATED","LAST-MODIFIED","SEQUENCE","TOUT"]
+MENU = tk.OptionMenu(fenetre, var, *options, command=sauvegarder_choix)
+MENU.pack(pady=20)
+
+
+
+#Ajout d'un fichier pour afficher le contenue
+btn_aff = tk.Button(fenetre,text="Afficher le resultat dans la console", command=lambda: open_file(file, choix))
+btn_aff.pack(pady=20)
+
+btn_csvw = tk.Button(fenetre,text="Cree un fichier CSV Pour Windows", command=lambda: csvfileWin(file))
+btn_csvw.pack(pady=20)
+btn_csvl = tk.Button(fenetre,text="Cree un fichier CSV Pour Linux", command=lambda: csvfileLinux(file))
+btn_csvl.pack(pady=20)
+
+# Ajout du bouton "Quitter"
+btn_quitter = tk.Button(fenetre, text="Quitter", command=quitter)
+btn_quitter.pack(pady=20)
+
+# Lancer l'interface graphique
+fenetre.mainloop()
