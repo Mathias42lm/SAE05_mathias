@@ -53,7 +53,7 @@ Le dashboard web affiche trois composants principaux :
 ### Interface Graphique de Lancement
 
 L'application principale `lunch.py` offre une interface simple avec :
-- Sélection de fichier TCPDump via dialogue
+- Sélection de fichier tcpdump via dialogue
 - Option de filtrage du trafic DNS
 - Bouton de lancement d'analyse
 - Ouverture automatique du dashboard dans le navigateur
@@ -78,7 +78,7 @@ python lunch.py
 
 ### Première Utilisation
 
-1. **Cliquez** sur "📂 Sélectionner un fichier TCPDump"
+1. **Cliquez** sur "📂 Sélectionner un fichier tcpdump"
 2. **Choisissez** un fichier de capture (ex: `fichier1000.txt` fourni)
 3. **Cochez** "Inclure le trafic DNS" si vous souhaitez analyser le trafic DNS
 4. **Cliquez** sur "🚀 LANCER L'ANALYSE"
@@ -136,7 +136,7 @@ SAE05_mathias/
 ### 1. Application Graphique Complète (`tp/lunch.py`) 🚀
 
 L'application principale offre une interface graphique intuitive pour :
-- **Sélection de fichiers** : Dialogue de fichier pour choisir un fichier TCPDump
+- **Sélection de fichiers** : Dialogue de fichier pour choisir un fichier tcpdump
 - **Options de filtrage** : Choix d'inclure ou exclure le trafic DNS
 - **Lancement automatique** : Analyse et ouverture automatique du dashboard web
 - **Installation automatique** : Vérification et installation des dépendances
@@ -227,7 +227,7 @@ python lunch.py
 
 **Workflow étape par étape :**
 
-1. 📂 **Sélectionner un fichier** : Cliquez sur "📂 Sélectionner un fichier TCPDump"
+1. 📂 **Sélectionner un fichier** : Cliquez sur "📂 Sélectionner un fichier tcpdump"
    - Choisissez votre fichier de capture réseau (format texte tcpdump)
    - Exemples fournis : `fichier182.txt`, `fichier1000.txt`
 
@@ -366,11 +366,13 @@ Les seuils de détection peuvent être ajustés dans `tp/analyse.py` dans la fon
 
 ```python
 # Seuils configurables (section --- SEUILS ---)
-LIMIT_SYN_HIGH = 50        # SYN Flood niveau HIGH
-LIMIT_SYN_MID = 25         # SYN Flood niveau MID
-LIMIT_SCAN_PORTS = 10      # Scan de ports détection
-LIMIT_SCAN_MAX = 40        # Scan de ports niveau HIGH
+LIMIT_SYN_HIGH = 50                        # SYN Flood niveau HIGH
+LIMIT_SYN_MID = LIMIT_SYN_HIGH / 2         # SYN Flood niveau MID (calculé: 25)
+LIMIT_SCAN_PORTS = 10                      # Scan de ports détection
+LIMIT_SCAN_MAX = LIMIT_SCAN_PORTS + 30     # Scan de ports niveau HIGH (calculé: 40)
 ```
+
+**Note** : Les valeurs `LIMIT_SYN_MID` et `LIMIT_SCAN_MAX` sont calculées automatiquement. Modifiez `LIMIT_SYN_HIGH` et `LIMIT_SCAN_PORTS` pour ajuster les seuils.
 
 ---
 
@@ -590,11 +592,13 @@ tcpdump -r fichier.pcap -n > fichier.txt
 
 **R :** Oui ! Éditez le fichier `tp/analyse.py` dans la fonction `detecter_attaques()`, section `--- SEUILS ---` :
 ```python
-LIMIT_SYN_HIGH = 50        # Votre valeur
-LIMIT_SYN_MID = 25         # Votre valeur
-LIMIT_SCAN_PORTS = 10      # Votre valeur
-LIMIT_SCAN_MAX = 40        # Votre valeur
+LIMIT_SYN_HIGH = 50                        # Votre valeur
+LIMIT_SYN_MID = LIMIT_SYN_HIGH / 2         # Calculé automatiquement
+LIMIT_SCAN_PORTS = 10                      # Votre valeur
+LIMIT_SCAN_MAX = LIMIT_SCAN_PORTS + 30     # Calculé automatiquement
 ```
+
+**Astuce** : Modifiez uniquement `LIMIT_SYN_HIGH` et `LIMIT_SCAN_PORTS`. Les autres valeurs sont calculées automatiquement.
 
 ### Q6 : Le dashboard est-il accessible depuis un autre ordinateur ?
 
