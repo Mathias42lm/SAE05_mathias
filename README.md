@@ -362,10 +362,10 @@ Les alertes sont présentées sous forme de tableau avec :
 
 ### ⚙️ Configuration des Seuils
 
-Les seuils de détection peuvent être ajustés dans `tp/analyse.py` :
+Les seuils de détection peuvent être ajustés dans `tp/analyse.py` dans la fonction `detecter_attaques()` :
 
 ```python
-# Seuils configurables (ligne 40-43)
+# Seuils configurables (section --- SEUILS ---)
 LIMIT_SYN_HIGH = 50        # SYN Flood niveau HIGH
 LIMIT_SYN_MID = 25         # SYN Flood niveau MID
 LIMIT_SCAN_PORTS = 10      # Scan de ports détection
@@ -512,7 +512,7 @@ python -m pip install flask
 **Solutions** :
 1. Ouvrez manuellement votre navigateur
 2. Allez à l'adresse : `http://127.0.0.1:5000`
-3. Si le port 5000 est occupé, modifiez dans `web.py` ligne 161 :
+3. Si le port 5000 est occupé, modifiez dans `web.py` dans la fonction `start_server()` :
    ```python
    app.run(host='0.0.0.0', port=5001, debug=False, use_reloader=False)
    ```
@@ -588,7 +588,7 @@ tcpdump -r fichier.pcap -n > fichier.txt
 
 ### Q5 : Puis-je ajuster les seuils de détection ?
 
-**R :** Oui ! Éditez le fichier `tp/analyse.py` lignes 40-43 :
+**R :** Oui ! Éditez le fichier `tp/analyse.py` dans la fonction `detecter_attaques()`, section `--- SEUILS ---` :
 ```python
 LIMIT_SYN_HIGH = 50        # Votre valeur
 LIMIT_SYN_MID = 25         # Votre valeur
