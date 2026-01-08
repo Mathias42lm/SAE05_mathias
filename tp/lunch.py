@@ -1,10 +1,14 @@
-import tkinter as tk
-from tkinter import filedialog, messagebox
-import threading
-import webbrowser
-import analyse as Analyse  # Assure-toi que le fichier s'appelle Analyse.py
-import web      # Assure-toi que le fichier s'appelle web.py
-
+import install
+if (install.verifier_et_configurer() == 1):
+    import tkinter as tk
+    from tkinter import filedialog, messagebox
+    import threading
+    import webbrowser
+    import analyse as Analyse  # Assure-toi que le fichier s'appelle Analyse.py
+    import web      # Assure-toi que le fichier s'appelle web.py
+else:
+    import sys
+    sys.exit(1)
 # Variables globales
 chemin_fichier_source = None
 

@@ -1,5 +1,10 @@
-from flask import Flask, render_template_string
-import collections
+import install
+if (install.verifier_et_configurer() == 1):
+    from flask import Flask, render_template_string
+    import collections
+else:
+    import sys
+    sys.exit(1)
 
 app = Flask(__name__)
 
