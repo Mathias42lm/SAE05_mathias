@@ -1,20 +1,108 @@
-# SAE05 - Analyseur de Trafic Réseau avec Dashboard Web
+# 🔒 SAE05 - Analyseur de Trafic Réseau avec Dashboard Web
+
+[![Python Version](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/flask-latest-green.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/license-Educational-orange.svg)](LICENSE)
+
+---
+
+## 📋 Table des Matières
+
+- [Description du Projet](#-description-du-projet)
+- [Aperçu Visuel](#-aperçu-visuel)
+- [Démarrage Rapide](#-démarrage-rapide)
+- [Objectifs Pédagogiques](#-objectifs-pédagogiques)
+- [Structure du Projet](#-structure-du-projet)
+- [Fonctionnalités Principales](#-fonctionnalités-principales)
+- [Installation et Utilisation](#-installation-et-utilisation)
+- [Format des Données](#-format-des-données)
+- [Détection de Sécurité](#-détection-de-sécurité)
+- [Technologies Utilisées](#-technologies-utilisées)
+- [Cas d'Usage](#-cas-dusage)
+- [Dépannage](#-dépannage)
+- [FAQ](#-faq)
+- [Documentation Associée](#-documentation-associée)
+- [Auteur](#-auteur)
+
+---
 
 ## 📋 Description du Projet
 
-Ce projet fait partie de la SAE 1.05 (Situation d'Apprentissage et d'Évaluation) et se concentre sur l'analyse et le traitement des données de trafic réseau capturées via tcpdump. Le projet utilise Python pour parser, analyser et détecter des comportements suspects dans les captures réseau, avec une interface graphique et un dashboard web interactif pour visualiser les résultats.
+Ce projet fait partie de la **SAE 1.05** (Situation d'Apprentissage et d'Évaluation) et se concentre sur l'**analyse et le traitement des données de trafic réseau** capturées via tcpdump. Le projet utilise Python pour parser, analyser et détecter des comportements suspects dans les captures réseau, avec une interface graphique et un dashboard web interactif pour visualiser les résultats.
+
+### ✨ Points Forts
+
+- 🖥️ **Interface Graphique Intuitive** : Lanceur avec Tkinter pour une utilisation simplifiée
+- 📊 **Dashboard Web Moderne** : Visualisations en temps réel avec Chart.js
+- 🛡️ **Détection d'Attaques** : Identification automatique de scans de ports et SYN floods
+- ⚡ **Installation Automatique** : Configuration des dépendances en un clic
+- 📁 **Export CSV** : Sauvegarde des analyses pour traitement ultérieur
+
+---
+
+## 🖼️ Aperçu Visuel
+
+### Dashboard Web
+
+Le dashboard web affiche trois composants principaux :
+
+1. **Graphique en Barres** : Volume de trafic par adresse IP source (Top 10)
+2. **Diagramme Circulaire** : Distribution proportionnelle du trafic réseau
+3. **Table d'Alertes** : Liste des comportements suspects détectés avec leur niveau de gravité
+
+### Interface Graphique de Lancement
+
+L'application principale `lunch.py` offre une interface simple avec :
+- Sélection de fichier TCPDump via dialogue
+- Option de filtrage du trafic DNS
+- Bouton de lancement d'analyse
+- Ouverture automatique du dashboard dans le navigateur
+
+---
+
+## 🚀 Démarrage Rapide
+
+### Installation en 3 Étapes
+
+```bash
+# 1. Cloner le dépôt
+git clone https://github.com/Mathias42lm/SAE05_mathias.git
+cd SAE05_mathias
+
+# 2. Naviguer vers le répertoire principal
+cd tp
+
+# 3. Lancer l'application (installe automatiquement les dépendances)
+python lunch.py
+```
+
+### Première Utilisation
+
+1. **Cliquez** sur "📂 Sélectionner un fichier TCPDump"
+2. **Choisissez** un fichier de capture (ex: `fichier1000.txt` fourni)
+3. **Cochez** "Inclure le trafic DNS" si vous souhaitez analyser le trafic DNS
+4. **Cliquez** sur "🚀 LANCER L'ANALYSE"
+5. Le **dashboard s'ouvre automatiquement** dans votre navigateur à `http://127.0.0.1:5000`
+
+> 💡 **Astuce** : Des fichiers de test (`fichier182.txt` et `fichier1000.txt`) sont fournis dans le dossier `tp/` pour tester l'application immédiatement.
+
+---
 
 ## 🎯 Objectifs Pédagogiques
 
-Ce projet couvre plusieurs compétences :
-- **Lecture et traitement de données** : parsing de fichiers de capture réseau
-- **Extraction de données** : extraction de métadonnées réseau (IP, ports, flags TCP, etc.)
-- **Analyse de sécurité** : détection d'attaques (scan de ports, SYN flood)
-- **Transformation de données** : export au format CSV pour analyse ultérieure
-- **Programmation Python** : utilisation de structures de données, fonctions, et manipulation de fichiers
-- **Développement Web** : création d'un dashboard interactif avec Flask et Chart.js
-- **Interface Graphique** : développement d'une interface utilisateur avec Tkinter
-- **Visualisation de données** : graphiques en barres et diagrammes circulaires (pie chart)
+Ce projet couvre plusieurs compétences techniques et analytiques :
+
+| Domaine | Compétences |
+|---------|-------------|
+| 📊 **Traitement de Données** | Parsing de fichiers, extraction de métadonnées réseau (IP, ports, flags TCP) |
+| 🔒 **Analyse de Sécurité** | Détection d'attaques (scan de ports, SYN flood), identification de comportements suspects |
+| 🔄 **Transformation de Données** | Export au format CSV, structuration des données pour analyse |
+| 🐍 **Programmation Python** | Structures de données, fonctions, manipulation de fichiers, threading |
+| 🌐 **Développement Web** | Création d'un dashboard interactif avec Flask et Chart.js |
+| 🖼️ **Interface Graphique** | Développement d'une UI intuitive avec Tkinter |
+| 📈 **Visualisation de Données** | Graphiques en barres, diagrammes circulaires, tableaux interactifs |
+
+---
 
 ## 📁 Structure du Projet
 
@@ -84,13 +172,13 @@ Gestion automatique de l'environnement :
 
 ### Prérequis
 
-```bash
-Python 3.x
-Flask (installation automatique via install.py)
-Tkinter (généralement inclus avec Python)
-```
+| Logiciel | Version | Installation |
+|----------|---------|--------------|
+| Python | 3.x | [Télécharger Python](https://www.python.org/downloads/) |
+| Flask | Dernière version | Installation automatique via `install.py` |
+| Tkinter | Inclus avec Python | Généralement préinstallé (voir section Dépannage) |
 
-### Installation Automatique
+### Installation Automatique (Recommandée)
 
 L'application vérifie et installe automatiquement les dépendances nécessaires :
 
@@ -100,23 +188,32 @@ python lunch.py
 ```
 
 Le script `lunch.py` lance automatiquement `install.py` qui :
-1. Vérifie la présence de Flask et l'installe si nécessaire
-2. Vérifie la présence de Tkinter
-3. Lance l'interface graphique si tout est OK
+1. ✅ Vérifie la présence de Flask et l'installe si nécessaire
+2. ✅ Vérifie la présence de Tkinter
+3. ✅ Lance l'interface graphique si tout est OK
 
-### Installation Manuelle (si nécessaire)
+### Installation Manuelle (Si Nécessaire)
 
 #### Sur Linux/Mac :
 ```bash
+# Installer Flask
 pip install flask
-# Si Tkinter n'est pas installé :
-sudo apt-get install python3-tk  # Debian/Ubuntu
+
+# Si Tkinter n'est pas installé (Ubuntu/Debian)
+sudo apt-get install python3-tk
+
+# Autres distributions Linux
+# Fedora/RHEL : sudo dnf install python3-tkinter
+# Arch : sudo pacman -S tk
 ```
 
 #### Sur Windows :
 ```bash
+# Installer Flask
 pip install flask
+
 # Tkinter est généralement inclus avec Python sur Windows
+# Si absent, réinstallez Python en cochant "tcl/tk and IDLE"
 ```
 
 ### Utilisation de l'Application Principale
@@ -128,27 +225,47 @@ cd tp
 python lunch.py
 ```
 
-1. Cliquez sur "📂 Sélectionner un fichier TCPDump"
-2. Choisissez votre fichier de capture (ex: `fichier1000.txt`)
-3. Cochez "Inclure le trafic DNS" si souhaité
-4. Cliquez sur "🚀 LANCER L'ANALYSE"
-5. Le dashboard web s'ouvre automatiquement dans votre navigateur
+**Workflow étape par étape :**
 
-Le dashboard affiche :
-- **Graphique en barres** : Volume de paquets par IP
-- **Diagramme circulaire** : Top 10 des IPs les plus actives
-- **Table d'alertes** : Attaques détectées avec gravité et nombre de paquets
+1. 📂 **Sélectionner un fichier** : Cliquez sur "📂 Sélectionner un fichier TCPDump"
+   - Choisissez votre fichier de capture réseau (format texte tcpdump)
+   - Exemples fournis : `fichier182.txt`, `fichier1000.txt`
 
-### Utilisation en Ligne de Commande
+2. ⚙️ **Configurer les options** : 
+   - ☑️ Cochez "Inclure le trafic DNS" pour analyser les requêtes DNS (port 53)
+   - ☐ Décochez pour exclure le trafic DNS de l'analyse
 
-Pour une utilisation basique sans interface graphique :
+3. 🚀 **Lancer l'analyse** : Cliquez sur "🚀 LANCER L'ANALYSE"
+   - L'analyse démarre et génère un fichier CSV
+   - Le serveur web démarre automatiquement
+   - Le dashboard s'ouvre dans votre navigateur par défaut
+
+4. 📊 **Consulter les résultats** :
+   - **Graphique en barres** : Volume de paquets par IP source
+   - **Diagramme circulaire** : Top 10 des IPs les plus actives
+   - **Table d'alertes** : Attaques détectées avec gravité et nombre de paquets
+
+### Utilisation en Ligne de Commande (Mode Basique)
+
+Pour une utilisation sans interface graphique :
 
 ```bash
 cd td
 python mellier_rendue.py
 ```
 
-Ce script génère un fichier `resultat_analyse_reseau.csv` avec les paquets analysés.
+Ce script génère un fichier `resultat_analyse_reseau.csv` avec les paquets analysés (sans détection d'attaques avancée).
+
+### Accès au Dashboard Web
+
+Une fois l'analyse lancée, le dashboard est accessible à :
+```
+http://127.0.0.1:5000
+```
+
+Le serveur tourne en arrière-plan tant que l'application est ouverte.
+
+---
 
 ## 📊 Format des Données
 
@@ -183,57 +300,404 @@ Le dashboard web génère automatiquement :
 
 ## 🔒 Détection de Sécurité
 
-Le module `analyse.py` implémente deux types de détection d'attaques avec seuils configurables :
+Le module `analyse.py` implémente deux types de détection d'attaques réseau avec seuils configurables :
 
-### Scan de Ports
-- **Seuil de détection** : Plus de 10 ports/services différents contactés
-- **Seuil MID** : Entre 10 et 39 ports différents
-- **Seuil HIGH** : À partir de 40 ports différents
-- **Indicateur** : Tentative de reconnaissance du réseau
-- **Comptage** : Nombre total de paquets envoyés durant le scan
+### 🔍 1. Scan de Ports
 
-### SYN Flood
-- **Seuil MID** : À partir de 25 paquets SYN depuis une même IP
-- **Seuil HIGH** : À partir de 50 paquets SYN depuis une même IP
-- **Indicateur** : Tentative de déni de service (DoS)
-- **Comptage** : Nombre de paquets SYN détectés
+**Description** : Détecte les tentatives de reconnaissance réseau où une IP tente d'identifier les services actifs.
 
-### Affichage des Alertes
+| Métrique | Valeur | Niveau |
+|----------|--------|--------|
+| **Seuil de Détection** | > 10 ports différents | ALERTE |
+| **Niveau MID** | 10-39 ports différents | 🟠 MOYEN |
+| **Niveau HIGH** | ≥ 40 ports différents | 🔴 ÉLEVÉ |
 
-Les alertes sont présentées dans le dashboard web avec :
-- **IP Source** : Adresse IP à l'origine de l'activité suspecte
-- **Type d'Attaque** : "Scan de Ports" ou "SYN Flood"
-- **Nombre de Paquets** : Quantité exacte de paquets impliqués
-- **Niveau de Gravité** : Badge coloré (HIGH en rouge, MID en orange)
+**Indicateurs** :
+- Multiples connexions vers des ports/services différents depuis une même IP
+- Tentative de cartographie du réseau
+- Comptage du nombre total de paquets envoyés durant le scan
+
+**Exemple d'Alerte** :
+```
+IP: 192.168.1.100
+Type: Scan de Ports
+Paquets: 45
+Niveau: HIGH
+Détails: Scan sur 42 ports (45 paquets)
+```
+
+### 💥 2. SYN Flood
+
+**Description** : Détecte les attaques par déni de service (DoS) basées sur l'envoi massif de paquets SYN.
+
+| Métrique | Valeur | Niveau |
+|----------|--------|--------|
+| **Seuil MID** | ≥ 25 paquets SYN | 🟠 MOYEN |
+| **Seuil HIGH** | ≥ 50 paquets SYN | 🔴 ÉLEVÉ |
+
+**Indicateurs** :
+- Volume anormal de paquets avec flag TCP `[S]`
+- Même IP source génère de nombreuses tentatives de connexion
+- Peut saturer la table des connexions de la cible
+
+**Exemple d'Alerte** :
+```
+IP: 10.0.0.55
+Type: SYN Flood
+Paquets: 67
+Niveau: HIGH
+Détails: Attaque par inondation (67 paquets SYN)
+```
+
+### 📋 Affichage des Alertes dans le Dashboard
+
+Les alertes sont présentées sous forme de tableau avec :
+
+| Colonne | Description |
+|---------|-------------|
+| **IP Source** | Adresse IP à l'origine de l'activité suspecte |
+| **Type** | "Scan de Ports" ou "SYN Flood" |
+| **Paquets** | Quantité exacte de paquets impliqués |
+| **Gravité** | Badge coloré : 🔴 HIGH (rouge) ou 🟠 MID (orange) |
+
+### ⚙️ Configuration des Seuils
+
+Les seuils de détection peuvent être ajustés dans `tp/analyse.py` :
+
+```python
+# Seuils configurables (ligne 40-43)
+LIMIT_SYN_HIGH = 50        # SYN Flood niveau HIGH
+LIMIT_SYN_MID = 25         # SYN Flood niveau MID
+LIMIT_SCAN_PORTS = 10      # Scan de ports détection
+LIMIT_SCAN_MAX = 40        # Scan de ports niveau HIGH
+```
+
+---
 
 ## 🎨 Technologies Utilisées
 
-- **Python 3.x** : Langage principal
-- **Tkinter** : Interface graphique pour le lanceur
-- **Flask** : Framework web pour le dashboard
-- **Chart.js** : Bibliothèque JavaScript pour les graphiques interactifs
-- **CSV** : Format d'export des données
-- **Threading** : Exécution parallèle du serveur web
+| Technologie | Usage | Version |
+|-------------|-------|---------|
+| ![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python) | Langage principal | 3.x |
+| ![Tkinter](https://img.shields.io/badge/Tkinter-GUI-orange) | Interface graphique lanceur | Inclus |
+| ![Flask](https://img.shields.io/badge/Flask-Web-green?logo=flask) | Framework web pour dashboard | Dernière |
+| ![Chart.js](https://img.shields.io/badge/Chart.js-Viz-yellow) | Graphiques interactifs | CDN |
+| ![CSV](https://img.shields.io/badge/CSV-Export-lightgrey) | Format d'export de données | Standard |
+| ![Threading](https://img.shields.io/badge/Threading-Async-purple) | Exécution parallèle du serveur | Python std |
+
+### Architecture Logicielle
+
+```
+┌─────────────────┐
+│   lunch.py      │  ← Interface Graphique (Tkinter)
+│   (Lanceur)     │
+└────────┬────────┘
+         │
+         ├─→ ┌─────────────┐
+         │   │ install.py  │  ← Vérification des dépendances
+         │   └─────────────┘
+         │
+         ├─→ ┌─────────────────┐
+         │   │   analyse.py    │  ← Parsing & Détection d'attaques
+         │   └─────────────────┘
+         │
+         └─→ ┌─────────────────┐
+             │     web.py      │  ← Serveur Flask + Dashboard
+             └─────────────────┘
+                     │
+                     ├─→ Chart.js (Graphiques)
+                     └─→ HTML/CSS (Interface)
+```
+
+---
+
+## 💼 Cas d'Usage
+
+### Cas d'Usage 1 : Analyse de Sécurité Réseau
+
+**Contexte** : Vous êtes administrateur réseau et suspectez une activité anormale.
+
+**Étapes** :
+1. Capturez le trafic réseau avec tcpdump : `sudo tcpdump -i eth0 -w capture.txt`
+2. Lancez l'application : `python lunch.py`
+3. Sélectionnez le fichier `capture.txt`
+4. Analysez les alertes dans le dashboard
+5. Exportez les résultats CSV pour rapport
+
+**Résultat** : Identification rapide des IPs suspectes et des types d'attaques.
+
+### Cas d'Usage 2 : Étude du Trafic Réseau
+
+**Contexte** : Projet académique d'analyse de trafic réseau.
+
+**Étapes** :
+1. Utilisez les fichiers de test fournis (`fichier1000.txt`)
+2. Expérimentez avec/sans filtrage DNS
+3. Analysez les visualisations (volume, distribution)
+4. Exportez les données CSV pour traitement dans Excel/Python
+
+**Résultat** : Compréhension des patterns de trafic et apprentissage de l'analyse réseau.
+
+### Cas d'Usage 3 : Détection d'Intrusion
+
+**Contexte** : Formation en cybersécurité, simulation d'attaques.
+
+**Étapes** :
+1. Générez du trafic de scan de ports (nmap, netcat)
+2. Capturez avec tcpdump
+3. Analysez avec l'application
+4. Observez les détections HIGH/MID dans le dashboard
+
+**Résultat** : Apprentissage des techniques de détection d'intrusion.
+
+### Cas d'Usage 4 : Monitoring Réseau Continu
+
+**Contexte** : Surveillance du trafic sur une période donnée.
+
+**Étapes** :
+1. Configurez tcpdump en rotation de fichiers
+2. Analysez chaque fichier avec l'application
+3. Comparez les CSV générés pour identifier les tendances
+4. Archivez les analyses pour audit
+
+**Résultat** : Historique du trafic et détection de patterns anormaux.
+
+---
+
+## 🔧 Dépannage
+
+### ❌ Problème : "Tkinter n'est pas détecté"
+
+**Solution Linux (Ubuntu/Debian)** :
+```bash
+sudo apt-get update
+sudo apt-get install python3-tk
+```
+
+**Solution Linux (Fedora/RHEL)** :
+```bash
+sudo dnf install python3-tkinter
+```
+
+**Solution Mac** :
+```bash
+# Réinstaller Python avec Homebrew
+brew install python-tk
+```
+
+**Solution Windows** :
+- Réinstallez Python depuis [python.org](https://www.python.org/downloads/)
+- Cochez l'option "tcl/tk and IDLE" lors de l'installation
+
+### ❌ Problème : "Flask n'est pas détecté après installation"
+
+**Causes possibles** :
+- Multiples versions de Python installées
+- Problèmes de PATH
+
+**Solutions** :
+```bash
+# Vérifier quelle version de pip est utilisée
+pip --version
+
+# Installer Flask avec pip3 explicitement
+pip3 install flask
+
+# Ou utiliser python -m pip
+python -m pip install flask
+```
+
+### ❌ Problème : Le dashboard ne s'ouvre pas automatiquement
+
+**Solutions** :
+1. Ouvrez manuellement votre navigateur
+2. Allez à l'adresse : `http://127.0.0.1:5000`
+3. Si le port 5000 est occupé, modifiez dans `web.py` ligne 161 :
+   ```python
+   app.run(host='0.0.0.0', port=5001, debug=False, use_reloader=False)
+   ```
+
+### ❌ Problème : "Erreur lors du parsing du fichier"
+
+**Vérifications** :
+- Le fichier est-il au format texte tcpdump ?
+- Le fichier contient-il des lignes valides ?
+- Exemple de format attendu :
+  ```
+  15:34:04.766656 IP 192.168.1.10.80 > 192.168.1.20.50019: Flags [S], seq 123456
+  ```
+
+**Solution** :
+```bash
+# Générer une capture valide avec tcpdump
+sudo tcpdump -i eth0 -n > capture.txt
+# Attendez quelques secondes puis Ctrl+C
+```
+
+### ❌ Problème : Fichier CSV vide ou incomplet
+
+**Causes** :
+- Fichier source mal formaté
+- Filtrage DNS trop restrictif
+- Données hexadécimales non filtrées
+
+**Solution** :
+- Vérifiez que le fichier contient des lignes commençant par un horodatage
+- Désactivez le filtrage DNS si nécessaire
+- Consultez les exemples fournis (`fichier182.txt`, `fichier1000.txt`)
+
+### ❌ Problème : "Permission denied" lors de l'installation
+
+**Solution** :
+```bash
+# Linux/Mac : Utiliser --user
+pip install --user flask
+
+# Ou installer dans un environnement virtuel
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+pip install flask
+```
+
+---
+
+## ❓ FAQ
+
+### Q1 : Quels formats de fichiers sont supportés ?
+
+**R :** L'application supporte les fichiers texte générés par `tcpdump` avec des lignes au format :
+```
+HH:MM:SS.microsec IP source.port > dest.port: Flags [X], ...
+```
+
+### Q2 : Puis-je analyser des fichiers .pcap binaires ?
+
+**R :** Non, l'application nécessite des fichiers texte. Convertissez d'abord avec :
+```bash
+tcpdump -r fichier.pcap -n > fichier.txt
+```
+
+### Q3 : Combien de lignes de trafic l'application peut-elle traiter ?
+
+**R :** L'application a été testée avec des fichiers contenant jusqu'à 1000+ lignes. Pour des fichiers très volumineux (>10 000 lignes), le chargement peut prendre quelques secondes.
+
+### Q4 : Les alertes sont-elles fiables à 100% ?
+
+**R :** Les alertes sont basées sur des seuils configurables et des heuristiques. Elles peuvent générer des **faux positifs** (trafic légitime détecté comme suspect) et des **faux négatifs** (attaques non détectées). Utilisez-les comme indicateurs, pas comme preuve absolue.
+
+### Q5 : Puis-je ajuster les seuils de détection ?
+
+**R :** Oui ! Éditez le fichier `tp/analyse.py` lignes 40-43 :
+```python
+LIMIT_SYN_HIGH = 50        # Votre valeur
+LIMIT_SYN_MID = 25         # Votre valeur
+LIMIT_SCAN_PORTS = 10      # Votre valeur
+LIMIT_SCAN_MAX = 40        # Votre valeur
+```
+
+### Q6 : Le dashboard est-il accessible depuis un autre ordinateur ?
+
+**R :** Par défaut, le serveur écoute sur `0.0.0.0:5000`, ce qui le rend accessible depuis le réseau local. Accédez via `http://<IP_SERVEUR>:5000` depuis un autre appareil. 
+
+⚠️ **Attention** : N'exposez pas ce serveur sur Internet sans sécurisation appropriée.
+
+### Q7 : Où sont stockés les fichiers CSV générés ?
+
+**R :** Les fichiers CSV sont générés dans le répertoire `tp/` avec le nom `resultat_analyse.csv`. Ils sont automatiquement écrasés à chaque nouvelle analyse.
+
+### Q8 : L'application fonctionne-t-elle hors ligne ?
+
+**R :** Partiellement. L'application nécessite une connexion Internet pour charger Chart.js depuis le CDN lors de l'ouverture du dashboard. Les autres fonctionnalités fonctionnent hors ligne.
+
+### Q9 : Puis-je utiliser l'application sur un serveur sans interface graphique ?
+
+**R :** Oui ! Utilisez directement le module d'analyse en ligne de commande :
+```bash
+cd tp
+python3 -c "import analyse; data, alerts = analyse.parse_tcpdump_flexible('fichier.txt', 'output.csv'); print(f'{len(data)} paquets, {len(alerts)} alertes')"
+```
+
+### Q10 : Comment contribuer au projet ?
+
+**R :** Ce projet est à but éducatif. Pour des améliorations, contactez l'auteur ou créez un fork du dépôt.
+
+---
 
 ## 📚 Documentation Associée
 
-Le projet inclut plusieurs documents pédagogiques :
-- `SAE-105-.pdf` : Cahier des charges du projet
-- `TP2 - SAE1.05.pdf` : Instructions pour les travaux pratiques
-- `SAE1.05 - Excel.pdf` et `SAE1.05 - VBA.pdf` : Documentation pour la partie Excel/VBA
-- `CR.docx` : Compte-rendu du projet
+Le projet inclut plusieurs documents pédagogiques dans les différents répertoires :
+
+| Document | Localisation | Description |
+|----------|--------------|-------------|
+| `SAE-105-.pdf` | `/td/` | Cahier des charges du projet SAE 1.05 |
+| `TP2 - SAE1.05.pdf` | `/tpexel/` | Instructions pour les travaux pratiques |
+| `SAE1.05 - Excel.pdf` | `/tpexel/` | Documentation pour la partie Excel |
+| `SAE1.05 - VBA.pdf` | `/tpexel/` | Documentation pour la partie VBA |
+| `CR.docx` | `/` | Compte-rendu du projet |
+| `tcpdump.docx` | `/tp/` et `/td/` | Documentation sur tcpdump |
+
+---
 
 ## 👨‍💻 Auteur
 
-Mathias - SAE 1.05
+**Mathias** - SAE 1.05  
+🔗 [GitHub Repository](https://github.com/Mathias42lm/SAE05_mathias)
+
+---
 
 ## 📝 Notes Techniques
 
-- Les fichiers CSV sont ignorés par git (voir `.gitignore`)
-- Les données hexadécimales sont automatiquement filtrées lors du parsing
-- Le projet supporte les noms d'hôtes et les adresses IP dans les captures
-- Le serveur web Flask tourne sur `http://127.0.0.1:5000`
-- L'installation des dépendances est automatisée pour plus de simplicité
-- Compatible Windows et multiplateforme
-- Les graphiques sont générés dynamiquement à partir des données analysées
-- Le dashboard utilise une palette de 10 couleurs pour le diagramme circulaire
+### Conventions et Détails d'Implémentation
+
+- ✅ Les fichiers CSV sont automatiquement ignorés par git (voir `.gitignore`)
+- ✅ Les données hexadécimales dans les captures sont automatiquement filtrées lors du parsing
+- ✅ Le projet supporte à la fois les noms d'hôtes et les adresses IP dans les captures tcpdump
+- ✅ Le serveur web Flask écoute par défaut sur `http://0.0.0.0:5000` (accessible réseau local)
+- ✅ L'installation des dépendances est entièrement automatisée pour simplifier le déploiement
+- ✅ Compatible Windows, Linux et macOS
+- ✅ Les graphiques sont générés dynamiquement à partir des données analysées en temps réel
+- ✅ Le diagramme circulaire utilise une palette de 10 couleurs distinctes pour meilleure lisibilité
+- ✅ Le serveur web tourne dans un thread séparé pour ne pas bloquer l'interface Tkinter
+- ✅ Ouverture automatique du navigateur avec un délai de 1.5s pour laisser le serveur démarrer
+
+### Limitations Connues
+
+- 📌 Le dashboard nécessite une connexion Internet pour charger Chart.js (CDN)
+- 📌 Les fichiers très volumineux (>100 000 lignes) peuvent ralentir l'analyse
+- 📌 Le parsing ne supporte que le format texte tcpdump (pas les fichiers .pcap binaires)
+- 📌 Un seul fichier CSV est conservé à la fois (écrasement à chaque nouvelle analyse)
+- 📌 Le serveur web n'a pas d'authentification (usage local uniquement)
+
+### Améliorations Futures Potentielles
+
+- 🚀 Support des fichiers .pcap via la bibliothèque Scapy
+- 🚀 Détection d'autres types d'attaques (DDoS, ARP Spoofing, etc.)
+- 🚀 Historique des analyses avec graphiques d'évolution temporelle
+- 🚀 Export PDF des rapports d'analyse
+- 🚀 Mode monitoring en temps réel avec refresh automatique
+- 🚀 Interface web pour uploader des fichiers sans Tkinter
+- 🚀 Support de filtres avancés (par IP, par port, par protocole)
+- 🚀 Intégration avec des bases de données pour stockage persistant
+
+---
+
+## 📄 Licence
+
+Ce projet est développé dans un cadre éducatif (SAE 1.05). Usage libre pour l'apprentissage et la formation.
+
+---
+
+## 🙏 Remerciements
+
+Merci aux enseignants et encadrants de la SAE 1.05 pour le support et les ressources pédagogiques.
+
+---
+
+<div align="center">
+
+**⭐ Si ce projet vous a été utile, n'hésitez pas à le mettre en favoris ! ⭐**
+
+Made with ❤️ for learning cybersecurity and network analysis
+
+</div>
