@@ -187,8 +187,8 @@ Le module `analyse.py` implémente deux types de détection d'attaques avec seui
 
 ### Scan de Ports
 - **Seuil de détection** : Plus de 10 ports/services différents contactés
-- **Seuil MID** : Entre 10 et 40 ports différents
-- **Seuil HIGH** : Plus de 40 ports différents
+- **Seuil MID** : Entre 10 et 39 ports différents
+- **Seuil HIGH** : À partir de 40 ports différents
 - **Indicateur** : Tentative de reconnaissance du réseau
 - **Comptage** : Nombre total de paquets envoyés durant le scan
 
@@ -234,6 +234,6 @@ Mathias - SAE 1.05
 - Le projet supporte les noms d'hôtes et les adresses IP dans les captures
 - Le serveur web Flask tourne sur `http://127.0.0.1:5000`
 - L'installation des dépendances est automatisée pour plus de simplicité
-- Compatible Windows (suppression des emojis dans install.py pour éviter les erreurs d'encodage)
+- Compatible Windows et multiplateforme
 - Les graphiques sont générés dynamiquement à partir des données analysées
 - Le dashboard utilise une palette de 10 couleurs pour le diagramme circulaire
