@@ -18,7 +18,7 @@
 - [Format des Données](#-format-des-données)
 - [Détection de Sécurité](#-détection-de-sécurité)
 - [Technologies Utilisées](#-technologies-utilisées)
-- [Cas d'Usage](#-cas-dusage)
+- [Cas d'usage](#-cas-dusage)
 - [Dépannage](#-dépannage)
 - [FAQ](#-faq)
 - [Documentation Associée](#-documentation-associée)
@@ -411,7 +411,7 @@ LIMIT_SCAN_MAX = 40        # Scan de ports niveau HIGH
 
 ---
 
-## 💼 Cas d'Usage
+## 💼 Cas d'usage
 
 ### Cas d'Usage 1 : Analyse de Sécurité Réseau
 
@@ -615,7 +615,9 @@ LIMIT_SCAN_MAX = 40        # Votre valeur
 **R :** Oui ! Utilisez directement le module d'analyse en ligne de commande :
 ```bash
 cd tp
-python3 -c "import analyse; data, alerts = analyse.parse_tcpdump_flexible('fichier.txt', 'output.csv'); print(f'{len(data)} paquets, {len(alerts)} alertes')"
+python3 -c "import analyse; \
+data, alerts = analyse.parse_tcpdump_flexible('fichier.txt', 'output.csv'); \
+print(f'{len(data)} paquets, {len(alerts)} alertes')"
 ```
 
 ### Q10 : Comment contribuer au projet ?
