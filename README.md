@@ -95,7 +95,7 @@ Tkinter (généralement inclus avec Python)
 L'application vérifie et installe automatiquement les dépendances nécessaires :
 
 ```bash
-cd /home/runner/work/SAE05_mathias/SAE05_mathias/tp
+cd tp
 python lunch.py
 ```
 
@@ -124,7 +124,7 @@ pip install flask
 #### Méthode Recommandée : Interface Graphique
 
 ```bash
-cd /home/runner/work/SAE05_mathias/SAE05_mathias/tp
+cd tp
 python lunch.py
 ```
 
@@ -144,7 +144,7 @@ Le dashboard affiche :
 Pour une utilisation basique sans interface graphique :
 
 ```bash
-cd /home/runner/work/SAE05_mathias/SAE05_mathias/td
+cd td
 python mellier_rendue.py
 ```
 
