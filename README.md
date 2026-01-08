@@ -193,8 +193,8 @@ Le module `analyse.py` implémente deux types de détection d'attaques avec seui
 - **Comptage** : Nombre total de paquets envoyés durant le scan
 
 ### SYN Flood
-- **Seuil MID** : Plus de 25 paquets SYN depuis une même IP
-- **Seuil HIGH** : Plus de 50 paquets SYN depuis une même IP
+- **Seuil MID** : À partir de 25 paquets SYN depuis une même IP
+- **Seuil HIGH** : À partir de 50 paquets SYN depuis une même IP
 - **Indicateur** : Tentative de déni de service (DoS)
 - **Comptage** : Nombre de paquets SYN détectés
 
