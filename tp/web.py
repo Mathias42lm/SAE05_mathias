@@ -2,7 +2,7 @@ import collections
 try:
     import install
     if (install.verifier_et_configurer() == 1):
-        from flask import Flask, render_template_string
+        from flask import Flask, render_template_string, Response
     else:
         import sys
         sys.exit(1)
@@ -28,7 +28,8 @@ HTML_DASHBOARD = """
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #1a202c; color: #e2e8f0; }
         .nav { background: #2d3748; color: white; padding: 15px 30px; border-bottom: 2px solid #4a5568; display: flex; justify-content: space-between; align-items: center; }
         .status { font-size: 0.8em; color: #68d391; background: rgba(104, 211, 145, 0.1); padding: 5px 12px; border-radius: 20px; }
-        
+        .btn-export { background: #3182ce; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.9em; font-weight: bold; transition: 0.3s; }
+        .btn-export:hover { background: #2b6cb0; }
         .main { 
             padding: 20px; 
             display: grid; 
@@ -54,7 +55,7 @@ HTML_DASHBOARD = """
 <body>
     <div class="nav">
         <h1>DASHBOARD DE SÉCURITÉ</h1>
-        <div class="status">● ANALYSE EN COURS</div>
+        <a href="/export" class="btn-export">📥 Exporter Rapport (.md)</a>
     </div>
     
     <div class="main">
@@ -155,6 +156,33 @@ HTML_DASHBOARD = """
 @app.route('/')
 def index():
     return render_template_string(HTML_DASHBOARD, **web_storage)
+
+@app.route('/export')
+def export_md():
+    """Génère un fichier Markdown basé sur les données actuelles."""
+    md = "# 🛡️ Rapport d'Analyse Réseau\n\n"
+    
+    md += "## 📊 Top 10 IP par Volume\n"
+    md += "| Adresse IP | Nombre de Paquets |\n"
+    md += "| :--- | :--- |\n"
+    for ip, count in zip(web_storage["labels"], web_storage["counts"]):
+        md += f"| {ip} | {count} |\n"
+    
+    md += "\n## 🚩 Analyse des Flags TCP\n"
+    for flag, count in zip(web_storage["flag_labels"], web_storage["flag_counts"]):
+        md += f"* **{flag}**: {count} paquets\n"
+    
+    md += "\n## ⚠️ Alertes de Sécurité\n"
+    md += "| IP Source | Type d'Alerte | Gravité |\n"
+    md += "| :--- | :--- | :--- |\n"
+    for a in web_storage["alertes"]:
+        md += f"| {a['ip']} | {a['type']} | {a['niveau']} |\n"
+    
+    return Response(
+        md,
+        mimetype="text/markdown",
+        headers={"Content-disposition": "attachment; filename=rapport_securite.md"}
+    )
 
 def start_server(rows, alerts):
     """
