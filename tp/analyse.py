@@ -131,5 +131,4 @@ def parse_tcpdump_flexible(input_path, output_csv, garder_domain=True):
         writer = csv.DictWriter(csvfile, fieldnames=headers)
         writer.writeheader()
         writer.writerows(data_rows)
-    
     return data_rows, alertes
