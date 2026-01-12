@@ -34,6 +34,7 @@ def detecter_attaques(data_rows):
     scans_ports = {}    # { src_ip: set(ports_visés) }
     packet_count_scan = {} # { src_ip: nb_total_paquets_scan }
     syn_counts = {}     # { src_ip: count }
+    ssh_attempts = {}  # Détection du brute force SSH
     alertes_web = []
 
     # --- SEUILS ---
@@ -41,6 +42,7 @@ def detecter_attaques(data_rows):
     LIMIT_SYN_MID = LIMIT_SYN_HIGH / 2
     LIMIT_SCAN_PORTS = 10 
     LIMIT_SCAN_MAX = LIMIT_SCAN_PORTS + 30
+    LIMIT_SSH_ATTEMPTS = 15 # Seuil pour les tentatives SSH
 
     for row in data_rows:
         ip_src = row["Source_IP"]
@@ -59,10 +61,20 @@ def detecter_attaques(data_rows):
         # 2. LOGIQUE SYN FLOOD
         if flags == "S":
             syn_counts[ip_src] = syn_counts.get(ip_src, 0) + 1
+        # 3. LOGIQUE BRUTE FORCE SSH
+        if port_dst in ["22", "ssh"]:
+            ssh_attempts[ip_src] = ssh_attempts.get(ip_src, 0) + 1
 
     # --- GÉNÉRATION DES ALERTES AVEC NOMBRE DE PAQUETS ---
 
     # Analyse SYN Flood
+    for ip, count in ssh_attempts.items():
+        if count >= LIMIT_SSH_ATTEMPTS:
+            alertes_web.append({
+                "ip": ip, "type": "Brute Force SSH", 
+                "details": f"Tentatives excessives sur port 22 ({count} paquets)", 
+                "niveau": "HIGH"
+            })
     for ip, count in syn_counts.items():
         if count >= LIMIT_SYN_MID:
             niveau = "HIGH" if count >= LIMIT_SYN_HIGH else "MID"
@@ -113,6 +125,10 @@ def parse_tcpdump_flexible(input_path, output_csv, garder_domain=True):
             src_ip, src_port = separer_ip_port(src_raw)
             dst_ip, dst_port = separer_ip_port(dst_raw)
 
+            if not garder_domain:
+                if src_port in ["53", "domain"] or dst_port in ["53", "domain"]:
+                    continue
+
             # Extraction des Flags [S], [S.], [P.], etc.
             flags = ""
             if "[" in line and "]" in line:
@@ -126,6 +142,7 @@ def parse_tcpdump_flexible(input_path, output_csv, garder_domain=True):
             })
 
     alertes = detecter_attaques(data_rows)
+    print(alertes)
 
     with open(output_csv, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers)
