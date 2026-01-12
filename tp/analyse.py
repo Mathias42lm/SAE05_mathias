@@ -142,7 +142,6 @@ def parse_tcpdump_flexible(input_path, output_csv, garder_domain=True):
             })
 
     alertes = detecter_attaques(data_rows)
-    print(alertes)
 
     with open(output_csv, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers)
