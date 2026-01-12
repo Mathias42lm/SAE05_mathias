@@ -53,7 +53,9 @@ HTML_DASHBOARD = """
         <h1>DASHBOARD DE SÉCURITÉ</h1>
         <a href="/export" class="btn-export">📥 Exporter Rapport (.md)</a>
     </div>
-    <div class="card full-width">
+    
+    <div class="main">
+        <div class="card full-width">
             <h3>Alertes ⚠️:</h3>
             <table>
                 <thead><tr><th>IP Source</th><th>Type</th><th>Détails</th><th>Gravité</th></tr></thead>
@@ -64,7 +66,6 @@ HTML_DASHBOARD = """
                 </tbody>
             </table>
         </div>
-    <div class="main">
         <div class="card full-width">
             <h3>📈 Évolution du Trafic (Paquets / Temps)</h3>
             <div class="chart-container"><canvas id="lineChart"></canvas></div>
