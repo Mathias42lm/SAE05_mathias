@@ -53,7 +53,17 @@ HTML_DASHBOARD = """
         <h1>DASHBOARD DE SÉCURITÉ</h1>
         <a href="/export" class="btn-export">📥 Exporter Rapport (.md)</a>
     </div>
-    
+    <div class="card full-width">
+            <h3>Alertes ⚠️:</h3>
+            <table>
+                <thead><tr><th>IP Source</th><th>Type</th><th>Détails</th><th>Gravité</th></tr></thead>
+                <tbody>
+                    {% for a in alertes %}
+                    <tr><td>{{a.ip}}</td><td>{{a.type}}</td><td>{{a.details}}</td><td><span class="{{a.niveau}}">{{a.niveau}}</span></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     <div class="main">
         <div class="card full-width">
             <h3>📈 Évolution du Trafic (Paquets / Temps)</h3>
@@ -87,18 +97,6 @@ HTML_DASHBOARD = """
         <div class="card">
             <h3>Top 10 IP (Volume)</h3>
             <div class="chart-container"><canvas id="barChart"></canvas></div>
-        </div>
-
-        <div class="card full-width">
-            <h3>Alertes Comportementales</h3>
-            <table>
-                <thead><tr><th>IP Source</th><th>Type</th><th>Détails</th><th>Gravité</th></tr></thead>
-                <tbody>
-                    {% for a in alertes %}
-                    <tr><td>{{a.ip}}</td><td>{{a.type}}</td><td>{{a.details}}</td><td><span class="{{a.niveau}}">{{a.niveau}}</span></td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -188,24 +186,7 @@ def export_md():
     md += f"| 🔥 Alertes Critiques | {alertes_critiques} |\n"
     md += f"| 🕒 Statut Global | {'🔴 CRITIQUE' if alertes_critiques > 0 else '🟢 SAIN'} |\n\n"
 
-    # 2. ÉVOLUTION TEMPORELLE (Evolution des paquets par rapport au temps)
-    md += "## 📈 Évolution du Trafic Temporel\n"
-    md += "Ce tableau montre la charge réseau par seconde enregistrée.\n\n"
-    md += "| Horodatage | Nombre de Paquets |\n"
-    md += "| :--- | :--- |\n"
-    for t, c in zip(web_storage["evolution_labels"], web_storage["evolution_counts"]):
-        md += f"| {t} | {c} |\n"
-    md += "\n"
-
-    # 3. DISTRIBUTION GLOBALE (Représentation du camembert)
-    md += "## 🥧 Distribution Globale des Sources\n"
-    md += "| Adresse IP | Volume | Part du Trafic |\n"
-    md += "| :--- | :--- | :--- |\n"
-    for ip, count in zip(web_storage["labels"], web_storage["counts"]):
-        part = (count / total_paquets * 100) if total_paquets > 0 else 0
-        md += f"| `{ip}` | {count} | {part:.1f}% |\n"
-
-    # 4. ALERTES
+    # 2. ALERTES
     md += "\n## ⚠️ Alertes de Sécurité\n"
     if nb_alertes == 0:
         md += "✅ Aucune menace détectée.\n"
@@ -214,6 +195,25 @@ def export_md():
         md += "| :--- | :--- | :--- | :--- |\n"
         for a in web_storage["alertes"]:
             md += f"| {a['niveau']} | `{a['ip']}` | {a['type']} | {a['details']} |\n"
+    
+    # 3. ÉVOLUTION TEMPORELLE (Evolution des paquets par rapport au temps)
+    md += "## 📈 Évolution du Trafic Temporel\n"
+    md += "Ce tableau montre la charge réseau par seconde enregistrée.\n\n"
+    md += "| Horodatage | Nombre de Paquets |\n"
+    md += "| :--- | :--- |\n"
+    for t, c in zip(web_storage["evolution_labels"], web_storage["evolution_counts"]):
+        md += f"| {t} | {c} |\n"
+    md += "\n"
+
+    # 4. DISTRIBUTION GLOBALE (Représentation du camembert)
+    md += "## 🥧 Distribution Globale des Sources\n"
+    md += "| Adresse IP | Volume | Part du Trafic |\n"
+    md += "| :--- | :--- | :--- |\n"
+    for ip, count in zip(web_storage["labels"], web_storage["counts"]):
+        part = (count / total_paquets * 100) if total_paquets > 0 else 0
+        md += f"| `{ip}` | {count} | {part:.1f}% |\n"
+
+    
 
     return Response(md, mimetype="text/markdown", headers={"Content-disposition": "attachment; filename=rapport_securite.md"})
 
