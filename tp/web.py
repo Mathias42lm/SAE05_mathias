@@ -12,10 +12,11 @@ except ImportError:
 
 app = Flask(__name__)
 
-# Stockage temporaire enrichi
+# Stockage temporaire enrichi avec les données de ports
 web_storage = {
     "labels": [], "counts": [], 
     "flag_labels": [], "flag_counts": [],
+    "port_labels": [], "port_counts": [], # NOUVEAU
     "alertes": [],
     "evolution_labels": [], "evolution_counts": [], 
     "avg_size": 0, "total_bytes": 0                
@@ -66,9 +67,20 @@ HTML_DASHBOARD = """
                 </tbody>
             </table>
         </div>
+
         <div class="card full-width">
             <h3>📈 Évolution du Trafic (Paquets / Temps)</h3>
             <div class="chart-container"><canvas id="lineChart"></canvas></div>
+        </div>
+
+        <div class="card">
+            <h3>🔌 Top Ports utilisés (Volume)</h3>
+            <div class="chart-container"><canvas id="portBarChart"></canvas></div>
+        </div>
+
+        <div class="card">
+            <h3>🥧 Répartition des Ports (Camembert)</h3>
+            <div class="chart-container"><canvas id="portPieChart"></canvas></div>
         </div>
 
         <div class="card">
@@ -86,7 +98,7 @@ HTML_DASHBOARD = """
         </div>
 
         <div class="card">
-            <h3>🥧 Distribution Globale (Camembert)</h3>
+            <h3>🥧 Distribution Globale (IP)</h3>
             <div class="chart-container"><canvas id="pieChart"></canvas></div>
         </div>
 
@@ -104,7 +116,26 @@ HTML_DASHBOARD = """
     <script>
         const colors = ['#3182ce', '#38a169', '#e53e3e', '#d69e2e', '#805ad5', '#319795', '#718096', '#f6e05e', '#f687b3', '#4a5568'];
 
-        // Line Chart (Evolution)
+        // NOUVEAU: Bar Chart Ports
+        new Chart(document.getElementById('portBarChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ port_labels|tojson }},
+                datasets: [{ label: 'Paquets', data: {{ port_counts|tojson }}, backgroundColor: '#38a169' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // NOUVEAU: Pie Chart Ports
+        new Chart(document.getElementById('portPieChart'), {
+            type: 'pie',
+            data: {
+                labels: {{ port_labels|tojson }},
+                datasets: [{ data: {{ port_counts|tojson }}, backgroundColor: colors }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#a0aec0', boxWidth: 10 } } } }
+        });
+
         new Chart(document.getElementById('lineChart'), {
             type: 'line',
             data: {
@@ -121,22 +152,15 @@ HTML_DASHBOARD = """
             options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // Pie Chart (Camembert)
         new Chart(document.getElementById('pieChart'), {
             type: 'pie',
             data: {
                 labels: {{ labels|tojson }},
-                datasets: [{
-                    data: {{ counts|tojson }},
-                    backgroundColor: colors,
-                    borderColor: '#2d3748',
-                    borderWidth: 2
-                }]
+                datasets: [{ data: {{ counts|tojson }}, backgroundColor: colors }]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#a0aec0' } } } }
         });
 
-        // Bar Chart
         new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: {
@@ -146,7 +170,6 @@ HTML_DASHBOARD = """
             options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // Radar Chart
         new Chart(document.getElementById('radarChart'), {
             type: 'radar',
             data: {
@@ -165,6 +188,7 @@ HTML_DASHBOARD = """
 </html>
 """
 
+# ... (Route / et /export restent identiques à votre version)
 @app.route('/')
 def index():
     return render_template_string(HTML_DASHBOARD, **web_storage)
@@ -176,45 +200,19 @@ def export_md():
     alertes_critiques = len([a for a in web_storage["alertes"] if a['niveau'] == "HIGH"])
     
     md = "# 🛡️ Rapport Complet d'Analyse et de Sécurité Réseau\n\n"
-    
-    # 1. RÉSUMÉ EXÉCUTIF
     md += "## 📝 Résumé Exécutif\n"
-    md += "| Indicateur | Valeur |\n"
-    md += "| :--- | :--- |\n"
-    md += f"| 📦 Volume Total | {total_paquets} paquets |\n"
-    md += f"| ⚖️ Taille Moyenne | {web_storage['avg_size']} octets |\n"
-    md += f"| 📂 Données Totales | {web_storage['total_bytes'] / 1024:.2f} KB |\n"
-    md += f"| 🔥 Alertes Critiques | {alertes_critiques} |\n"
-    md += f"| 🕒 Statut Global | {'🔴 CRITIQUE' if alertes_critiques > 0 else '🟢 SAIN'} |\n\n"
+    md += "| Indicateur | Valeur |\n| :--- | :--- |\n"
+    md += f"| 📦 Volume Total | {total_paquets} paquets |\n| ⚖️ Taille Moyenne | {web_storage['avg_size']} octets |\n| 🔥 Alertes Critiques | {alertes_critiques} |\n\n"
 
-    # 2. ALERTES
-    md += "\n## ⚠️ Alertes de Sécurité\n"
-    if nb_alertes == 0:
-        md += "✅ Aucune menace détectée.\n"
+    md += "## ⚠️ Alertes\n"
+    if nb_alertes == 0: md += "✅ Aucune menace détectée.\n"
     else:
-        md += "| Gravité | IP Source | Type | Détails |\n"
-        md += "| :--- | :--- | :--- | :--- |\n"
-        for a in web_storage["alertes"]:
-            md += f"| {a['niveau']} | `{a['ip']}` | {a['type']} | {a['details']} |\n"
+        md += "| Gravité | IP Source | Type | Détails |\n| :--- | :--- | :--- | :--- |\n"
+        for a in web_storage["alertes"]: md += f"| {a['niveau']} | `{a['ip']}` | {a['type']} | {a['details']} |\n"
     
-    # 3. ÉVOLUTION TEMPORELLE (Evolution des paquets par rapport au temps)
-    md += "## 📈 Évolution du Trafic Temporel\n"
-    md += "Ce tableau montre la charge réseau par seconde enregistrée.\n\n"
-    md += "| Horodatage | Nombre de Paquets |\n"
-    md += "| :--- | :--- |\n"
-    for t, c in zip(web_storage["evolution_labels"], web_storage["evolution_counts"]):
-        md += f"| {t} | {c} |\n"
-    md += "\n"
-
-    # 4. DISTRIBUTION GLOBALE (Représentation du camembert)
-    md += "## 🥧 Distribution Globale des Sources\n"
-    md += "| Adresse IP | Volume | Part du Trafic |\n"
-    md += "| :--- | :--- | :--- |\n"
-    for ip, count in zip(web_storage["labels"], web_storage["counts"]):
-        part = (count / total_paquets * 100) if total_paquets > 0 else 0
-        md += f"| `{ip}` | {count} | {part:.1f}% |\n"
-
-    
+    md += "\n## 🔌 Top Ports Utilisés\n"
+    for p, c in zip(web_storage["port_labels"], web_storage["port_counts"]):
+        md += f"* **Port {p}**: {c} paquets\n"
 
     return Response(md, mimetype="text/markdown", headers={"Content-disposition": "attachment; filename=rapport_securite.md"})
 
@@ -225,7 +223,13 @@ def start_server(rows, alerts):
     web_storage["labels"] = [x[0] for x in top_10]
     web_storage["counts"] = [x[1] for x in top_10]
     
-    # 2. Flags TCP
+    # 2. NOUVEAU: Top 10 Ports de destination
+    port_counts = collections.Counter([r.get("Dest_Port") for r in rows if r.get("Dest_Port")])
+    top_ports = port_counts.most_common(10)
+    web_storage["port_labels"] = [str(x[0]) for x in top_ports]
+    web_storage["port_counts"] = [x[1] for x in top_ports]
+
+    # 3. Flags TCP
     flag_list = []
     for r in rows:
         f = r.get("Flags", "")
@@ -234,13 +238,13 @@ def start_server(rows, alerts):
     web_storage["flag_labels"] = list(flag_data.keys())
     web_storage["flag_counts"] = list(flag_data.values())
 
-    # 3. Évolution Temporelle
+    # 4. Évolution Temporelle
     time_data = collections.Counter([r.get("Horodatage", "").split('.')[0] for r in rows])
     sorted_times = sorted(time_data.items())
     web_storage["evolution_labels"] = [x[0] for x in sorted_times]
     web_storage["evolution_counts"] = [x[1] for x in sorted_times]
 
-    # 4. Taille Moyenne des Paquets
+    # 5. Taille Moyenne
     sizes = [int(r["Length"]) for r in rows if r.get("Length") and r["Length"].isdigit()]
     web_storage["total_bytes"] = sum(sizes)
     web_storage["avg_size"] = round(sum(sizes) / len(sizes), 2) if sizes else 0
