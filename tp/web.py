@@ -195,26 +195,63 @@ def index():
 
 @app.route('/export')
 def export_md():
+    """Génère un rapport Markdown complet et structuré."""
+    # Préparation des variables globales pour le rapport
     total_paquets = sum(web_storage["counts"])
+    total_kb = web_storage['total_bytes'] / 1024
     nb_alertes = len(web_storage["alertes"])
     alertes_critiques = len([a for a in web_storage["alertes"] if a['niveau'] == "HIGH"])
     
-    md = "# 🛡️ Rapport Complet d'Analyse et de Sécurité Réseau\n\n"
-    md += "## 📝 Résumé Exécutif\n"
+    # 1. EN-TÊTE ET RÉSUMÉ EXÉCUTIF
+    md = "# 🛡️ Rapport Global d'Analyse et de Sécurité Réseau\n\n"
+    md += "## 📝 Résumé Exécutif & Statistiques\n"
     md += "| Indicateur | Valeur |\n| :--- | :--- |\n"
-    md += f"| 📦 Volume Total | {total_paquets} paquets |\n| ⚖️ Taille Moyenne | {web_storage['avg_size']} octets |\n| 🔥 Alertes Critiques | {alertes_critiques} |\n\n"
+    md += f"| 📦 Volume Total | {total_paquets} paquets |\n"
+    md += f"| ⚖️ Taille Moyenne | {web_storage['avg_size']} octets |\n"
+    md += f"| 📂 Données Transférées | {total_kb:.2f} KB |\n"
+    md += f"| ⚠️ Total Alertes | {nb_alertes} |\n"
+    md += f"| 🔥 Alertes Critiques | {alertes_critiques} |\n"
+    md += f"| 🕒 Statut Global | {'🔴 CRITIQUE' if alertes_critiques > 0 else '🟢 SAIN'} |\n\n"
 
-    md += "## ⚠️ Alertes\n"
-    if nb_alertes == 0: md += "✅ Aucune menace détectée.\n"
+    # 2. JOURNAL DES ALERTES DE SÉCURITÉ
+    md += "## ⚠️ Journal des Alertes\n"
+    if nb_alertes == 0:
+        md += "✅ Aucune menace détectée sur cette période.\n"
     else:
-        md += "| Gravité | IP Source | Type | Détails |\n| :--- | :--- | :--- | :--- |\n"
-        for a in web_storage["alertes"]: md += f"| {a['niveau']} | `{a['ip']}` | {a['type']} | {a['details']} |\n"
-    
-    md += "\n## 🔌 Top Ports Utilisés\n"
-    for p, c in zip(web_storage["port_labels"], web_storage["port_counts"]):
-        md += f"* **Port {p}**: {c} paquets\n"
+        md += "| Gravité | IP Source | Type d'Alerte | Détails de l'Analyse |\n"
+        md += "| :--- | :--- | :--- | :--- |\n"
+        for a in web_storage["alertes"]:
+            # Formatage visuel du niveau de gravité
+            label_niveau = "🔴 HIGH" if a['niveau'] == "HIGH" else "🟡 MID"
+            md += f"| {label_niveau} | `{a['ip']}` | **{a['type']}** | {a['details']} |\n"
 
-    return Response(md, mimetype="text/markdown", headers={"Content-disposition": "attachment; filename=rapport_securite.md"})
+    # 3. ÉVOLUTION TEMPORELLE
+    md += "## 📈 Évolution Temporelle du Trafic\n"
+    md += "Analyse de la charge réseau par seconde.\n\n"
+    md += "| Horodatage | Volume (Paquets) |\n| :--- | :--- |\n"
+    for t, c in zip(web_storage['evolution_labels'], web_storage['evolution_counts']):
+        md += f"| {t} | {c} |\n"
+    md += "\n"
+
+    # 4. ANALYSE DES SERVICES (Top Ports)
+    md += "## 🔌 Top Ports Utilisés (Services)\n"
+    md += "| Port / Service | Volume (Paquets) |\n| :--- | :--- |\n"
+    for p, c in zip(web_storage["port_labels"], web_storage["port_counts"]):
+        md += f"| **Port {p}** | {c} |\n"
+    md += "\n"
+
+    # 5. ANALYSE DES FLAGS TCP
+    md += "## 🚩 Analyse des Flags TCP\n"
+    md += "| Flag | Occurrences |\n| :--- | :--- |\n"
+    for f, c in zip(web_storage["flag_labels"], web_storage["flag_counts"]):
+        md += f"| {f} | {c} |\n"
+    md += "\n"
+
+    return Response(
+        md, 
+        mimetype="text/markdown", 
+        headers={"Content-disposition": "attachment; filename=rapport_securite.md"}
+    )
 
 def start_server(rows, alerts):
     # 1. Top 10 IP
